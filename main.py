@@ -53,6 +53,7 @@ class Example(QWidget):
     def keyPressEvent(self, event: QtGui.QKeyEvent) -> None:
         keys = {
             Qt.Key_PageUp, Qt.Key_PageDown,
+            Qt.Key_Up, Qt.Key_Down, Qt.Key_Left, Qt.Key_Right
         }
         if event.key() == Qt.Key_PageUp:
             self.scale /= self.SCALE_FACTOR
@@ -62,6 +63,22 @@ class Example(QWidget):
             self.scale = self.SCALE_MAX
         elif self.scale < self.SCALE_MIN:
             self.scale = self.SCALE_MIN
+        elif event.key() == Qt.Key_Up:
+            self.lat += self.scale
+        elif event.key() == Qt.Key_Down:
+            self.lat -= self.scale
+        elif event.key() == Qt.Key_Left:
+            self.long -= self.scale
+        elif event.key() == Qt.Key_Right:
+            self.long += self.scale
+        if self.long > 180:
+            self.long -= 360
+        elif self.long < -180:
+            self.long += 360
+        if self.lat > 85:
+            self.lat = 85
+        elif self.lat < -85:
+            self.lat = -85
         if event.key() in keys:
             self.getImage()
 
