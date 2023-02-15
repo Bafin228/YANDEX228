@@ -13,9 +13,13 @@ class Example(QWidget):
     SCALE_FACTOR = 2
     SCALE_MIN = 0.000125
     SCALE_MAX = 65
+    LONG = 37.530887
+    LAT = 55.703118
 
     def __init__(self):
         super().__init__()
+        self.long = self.LONG
+        self.lat = self.LAT
         self.scale = self.SCALE_INITIAL
         self.initUI()
         self.getImage()
@@ -23,7 +27,7 @@ class Example(QWidget):
     def getImage(self):
         map_request = "http://static-maps.yandex.ru/1.x/"
         params = {
-            'll': '37.530887,55.703118',
+            'll': f'{self.long},{self.lat}',
             'spn': f'{self.scale},{self.scale}',
             'l': 'map'
         }
