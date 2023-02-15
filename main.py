@@ -1,5 +1,7 @@
 import sys
 import requests
+from PyQt5 import QtGui
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel
 
@@ -7,14 +9,25 @@ SCREEN_SIZE = [600, 450]
 
 
 class Example(QWidget):
+    SCALE_INITIAL = 0.002
+    SCALE_FACTOR = 2
+    SCALE_MIN = 0.000125
+    SCALE_MAX = 65
+
     def __init__(self):
         super().__init__()
+        self.scale = self.SCALE_INITIAL
         self.initUI()
         self.getImage()
 
     def getImage(self):
-        map_request = "http://static-maps.yandex.ru/1.x/?ll=37.530887,55.703118&spn=0.002,0.002&l=map"
-        response = requests.get(map_request)
+        map_request = "http://static-maps.yandex.ru/1.x/"
+        params = {
+            'll': '37.530887,55.703118',
+            'spn': f'{self.scale},{self.scale}',
+            'l': 'map'
+        }
+        response = requests.get(map_request, params=params)
 
         if not response:
             print("Ошибка выполнения запроса:")
@@ -32,6 +45,23 @@ class Example(QWidget):
         self.image = QLabel(self)
         self.image.move(0, 0)
         self.image.resize(600, 450)
+
+    def keyPressEvent(self, event: QtGui.QKeyEvent) -> None:
+        keys = {
+            Qt.Key_PageUp, Qt.Key_PageDown,
+        }
+        if event.key() == Qt.Key_PageUp:
+            self.scale /= self.SCALE_FACTOR
+        elif event.key() == Qt.Key_PageDown:
+            self.scale *= self.SCALE_FACTOR
+        if self.scale > self.SCALE_MAX:
+            self.scale = self.SCALE_MAX
+        elif self.scale < self.SCALE_MIN:
+            self.scale = self.SCALE_MIN
+        if event.key() in keys:
+            self.getImage()
+
+
 
 
 if __name__ == '__main__':
